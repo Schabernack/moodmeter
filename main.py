@@ -9,9 +9,9 @@ if not camcapture:
         print "Error opening WebCAM"
         sys.exit(1)
  
-while 1:
+while cv.WaitKey(10)!=27:
     frame = cv.QueryFrame(camcapture)
     if frame is None:
         break
     cv.ShowImage('Camera', frame)
-    k=cv.WaitKey(10);
+    
