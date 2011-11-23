@@ -1,6 +1,8 @@
-import Image;
-import cv;
- 
+import Image
+
+import cv
+
+
 
 
 class Mmeter:
@@ -12,10 +14,21 @@ class Mmeter:
 
 		cv.ShowImage("opened img", openimg)
 		cv.MoveWindow("opened img", 20,20)
-
+		
+		skeletor=self.skeletonization(openimg)
+		cv.ShowImage("skelett",skeletor)
+		
 		while cv.WaitKey(10)!=27:
 			x=1	
 			
+			
+			
+	def skeletonization(self, image):
+		skel = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
+		cv.Rectangle(skel, (0,0), (image.height, image.width), (0), cv.CV_FILLED, )
+		tmp = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
+		cv.CreateStructuringElementEx(3,3,1,1, cv.CV_MORPH_CROSS)
+				
 	
 	#returns new, opened image
 	def morph_open(self, image, it=1, kernel=None):	
