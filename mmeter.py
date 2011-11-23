@@ -21,7 +21,6 @@ class Mmeter:
 		run()
 	
 	def run():
-
 		img = cv.LoadImage("img/1.jpg")
 		img_hsv= cv.CreateMat(img.height, img.width, cv.CV_8UC3)
 		cv.CvtColor(img, img_hsv, cv.CV_BGR2HSV)
