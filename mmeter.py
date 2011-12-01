@@ -8,66 +8,45 @@ import cv
 class Mmeter:
 	
 	def __init__(self):
-		img = cv.LoadImage("img/2.jpg")
+		img = cv.LoadImage("img/4.jpg")
 		
 		openimg=self.fg_disc(img)
 
 		cv.ShowImage("opened img", openimg)
-		cv.MoveWindow("opened img", 20,20)
+		#cv.MoveWindow("opened img", 20,20)
 		
 		skeletor=self.skeletonization(openimg)
 		cv.ShowImage("skelett",skeletor)
+		
+
 		
 		while cv.WaitKey(10)!=27:
 			x=1	
 			
 			
 			
-	def skeletonization(self, image):
-		skel = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
-		cv.Rectangle(skel, (0,0), (image.height, image.width), (0), cv.CV_FILLED, )
-		tmp = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
-		cross_kernel = cv.CreateStructuringElementEx(3,3,1,1, cv.CV_SHAPE_CROSS)
 		
-		while True:
-			cv.MorphologyEx(image, tmp, tmp, operation=cv.CV_MOP_OPEN, element=cross_kernel)
-			cv.Not(tmp, tmp)
-			cv.And(image, tmp, tmp)
+	def skeleletonization(self, image):
+		img = cv.CreateMat (image.height, image.width, cv.CV_8UC1)
+		cv.Copy(image, img)
+		skel = cv.CreateMat(img.height, img.width, cv.CV_8UC1)	
+		eroded = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		tmp = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		element = cv.CreateStructuringElementEx(3,3,1,1,cv.CV_SHAPE_CROSS)
+		done=False
+		while (done==False):
+			cv.Erode(img, eroded, element)
+			cv.Dilate(eroded, tmp, element)
+			cv.Sub(img, tmp, tmp)
 			cv.Or(skel, tmp, skel)
-			cv.Erode(image, image, cross_kernel)
-			max=cv.MinMaxLoc(image)[1]			
-			
-			#erode until no white pixel in image is left
-			if max==0:
-				break
-		
-		opened = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
-		closed = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
-		
-		#cv.MorphologyEx(skel, opened, tmp, operation=cv.CV_MOP_OPEN, element=cv.CreateStructuringElementEx(3,3,1,1,cv.CV_SHAPE_RECT))
-		#cv.MorphologyEx(skel, closed, tmp, operation=cv.CV_MOP_CLOSE, element=cv.CreateStructuringElementEx(3,3,1,1,cv.CV_SHAPE_RECT))
-		
-		
-		
-		cv.ShowImage("opened", opened)
-		cv.ShowImage("closed", closed)
+			cv.Copy(eroded, img)	
+			done = (cv.Norm(img, None)==0)
+
 		
 		return skel
 		
-	
-	#returns new, opened image
-	def morph_open(self, image, it=1, kernel=None):	
-		img=cv.CreateMat(image.height, image.width, cv.CV_8UC1)
-		cv.Erode(img, img, kernel, it)
-		cv.Dilate(image, img, kernel , it)		
-		return img
 		
-	#returns new, closed image
-	def morph_close(self, image, it=1, kernel=None):
-		img=cv.CreateMat(image.height, image.width, cv.CV_8UC1)
-		cv.Dilate(image, img, kernel, it)		
-		cv.Erode(img, img, kernel,  it)
-		return img
+
 	
 	#foreground/background discrimination		
 	def fg_disc(self, image):
@@ -95,8 +74,10 @@ class Mmeter:
 		
 		cv.Erode(img_and, img_and, iterations=2)	
 		cv.Erode(img_and, img_and, iterations=1, element=kernel5)	
-		openimg=self.morph_close(img_and, 30, kernel=kernell)
+		open_img = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
+		cv.MorphologyEx(img_and,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 30	)
 		
+		openimg = open_img
 		return openimg
 	
 
