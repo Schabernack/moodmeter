@@ -8,24 +8,66 @@ import cv
 class Mmeter:
 	
 	def __init__(self):
-		img = cv.LoadImage("img/4.jpg")
-		
-		openimg=self.fg_disc(img)
+		img = cv.LoadImage("img/2.jpg")
 
-		cv.ShowImage("opened img", openimg)
+		#trackbar values
+		self.distRes = 1
+		self.angleRes = 5.0
+		self.threshold = 1
+		self.minLine = 0
+		self.maxGap = 0
+	
+		self.openimg=self.fg_disc(img)
+		
+		self.display = cv.CreateMat(img.height,img.width,cv.CV_8UC1)
+
 		#cv.MoveWindow("opened img", 20,20)
 		
-		skeletor=self.skeletonization(openimg)
-		cv.ShowImage("skelett",skeletor)
-		
+		self.skeletor=self.skeleletonization(self.openimg)
 
-		
+		cv.NamedWindow("Hough", 0)		
+		cv.CreateTrackbar("dist","Hough",1,150,self.update_distResolution)
+		cv.CreateTrackbar("angle","Hough",1,6283,self.update_angle)
+		cv.CreateTrackbar("thresh","Hough",1,150,self.update_threshold)
+		cv.CreateTrackbar("minLine","Hough",1,150,self.update_minLine)
+		cv.CreateTrackbar("maxGap","Hough",1,150,self.update_maxGap)
+
+		self.updateDisplay()		
+
 		while cv.WaitKey(10)!=27:
 			x=1	
 			
-			
-			
 		
+		
+			
+	def update_distResolution(self,val):
+		self.distRes=val
+		self.updateDisplay()
+	
+	def update_angle(self,val):
+		self.angleRes=0.00000001+val/1000.0
+		self.updateDisplay()
+
+	def update_threshold(self,val):
+		self.threshold=val
+		self.updateDisplay()	
+
+	def update_minLine(self,val):
+		self.minLine=val
+		self.updateDisplay()
+
+	def update_maxGap(self,val):
+		self.maxGap=val
+		self.updateDisplay()
+
+	def updateDisplay(self):
+		cv.Copy(self.openimg,self.display)	
+		foo = cv.HoughLines2(self.skeletor, cv.CreateMemStorage(), cv.CV_HOUGH_PROBABILISTIC, self.distRes, self.angleRes, self.threshold,self.minLine,self.maxGap)
+
+		for f in foo:
+			cv.Line(self.display, f[0], f[1], (0,0,0))
+		cv.ShowImage("Hough", self.display)	
+
 	def skeleletonization(self, image):
 		img = cv.CreateMat (image.height, image.width, cv.CV_8UC1)
 		cv.Copy(image, img)
