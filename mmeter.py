@@ -10,6 +10,10 @@ class Mmeter:
   def __init__(self):
     img = cv.LoadImage("img/2.jpg")
 
+    
+    tempDir = "templates/"
+    tempList = ("0.png","90.png","180.png")
+
     #trackbar values
     self.distRes = 1
     self.angleRes = 5.0
@@ -51,6 +55,20 @@ class Mmeter:
 
     cv.ShowImage("bild", img)
     cv.MoveWindow("bild", 20,20)
+    
+    
+    
+    for temp in tempList:
+    	template = cv.LoadImage(tempDir+temp,0)
+    	
+    	result = cv.CreateMat(img.height-template.height+1, img.width-template.width+1, cv.CV_32FC1)
+    
+    	cv.MatchTemplate(self.openimg,template,result,cv.CV_TM_SQDIFF)
+    
+    	print temp," :\t",cv.MinMaxLoc(result)
+    	
+    	
+    
     #cv.NamedWinow("Hough", 0)    
     #cv.CreateTrackbar("dist","Hough",1,150,self.update_distResolution)
     #cv.CreateTrackbar("angle","Hough",1,6283,self.update_angle)
