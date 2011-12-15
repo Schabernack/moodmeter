@@ -2,46 +2,49 @@ import Image
 import cv
 import math
 import pprint
+from skin_model import Skin_Model
 
 class Mmeter:
   
   def __init__(self):
     pp = pprint.PrettyPrinter(indent=4)
-    img = cv.LoadImageM("img/1.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
-    
+#    img = cv.LoadImageM("img/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
+    img = cv.LoadImageM("/home/nico/Dropbox/ComputerVision/Code/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)   
     self.tempDir = "templates/"
     self.tempList = ("0.png","22.png","45.png","67.png","90.png","112.png","135.png","157.png","180.png")
   
 
-    self.openimg=self.fgdisc_rgb(img)
+#    self.openimg=self.fgdisc_rgb(img)
 #    self.openimg = self.fill_hand(self.openimg)
+      
+    self.openimg = self.skindisc(img)
+    
+    cv.ShowImage("w00t", self.openimg)
+
 
     canny = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 
     cv.Canny(self.openimg, canny, 50.0,210.0)
     cv.ShowImage("canny",canny)
-    contours =  cv.FindContours(canny,  cv.CreateMemStorage(),  cv.CV_RETR_LIST, cv.CV_CHAIN_APPROX_NONE, (0,0))
+    #contours =  cv.FindContours(canny,  cv.CreateMemStorage(),  cv.CV_RETR_LIST, cv.CV_CHAIN_APPROX_NONE, (0,0))
     
-    biggestContour = contours
+    #biggestContour = contours
     
-    pp.pprint(biggestContour)
-    pp.pprint(contours)   
-    pp.pprint(    cv.ContourArea(contours))
     
-    for sequence in self.contour_iterator(contours):          
+    #for sequence in self.contour_iterator(contours):          
 #      pp.pprint(cv.ContourArea(biggestContour))
 #      pp.pprint(cv.ContourArea(sequence))
-      if(cv.ContourArea(sequence) > cv.ContourArea(biggestContour)):
-        biggestContour = sequence
+     # if(cv.CfontourArea(sequence) > cv.ContourArea(biggestContour)):
+      #  biggestContour = sequence
     
-    pp.pprint(biggestContour)
-    for item in biggestContour:
-      cv.Circle(img, item, 1, (0,0,255))
+
+#    for item in biggestContour:
+#      cv.Circle(img, item, 1, (0,0,255))
         
     
-    self.getBestMatch(img)
-    cv.ShowImage("bild", img)
-    cv.MoveWindow("bild", 20,20)  
+#    self.getBestMatch(img)
+#    cv.ShowImage("bild", img)
+#    cv.MoveWindow("bild", 20,20)  
 
     while cv.WaitKey(10)!=27:
       x=1 
@@ -84,6 +87,23 @@ class Mmeter:
       done = (cv.Norm(img, None)==0)
    
     return skel 
+    
+    
+  #returns new black white image where skinb is white
+  def skindisc(self, image):
+    img_skin = cv.CreateMat(image.height, image.width, cv.CV_8UC1)
+    skinmodel = Skin_Model()
+    print img_skin.width, img_skin.height
+    for row in range(image.rows):
+      print row
+      for col in range(image.cols):
+        b,g,r = image[row,col]
+        pixel = (r,g,b)
+        color = (255) if skinmodel.is_skin(pixel) else (0)  
+        cv.Set2D(img_skin, row, col, color)
+    return img_skin
+
+    
 
   def fgdisc_rgb(self, image):
     r_plane = cv.CreateMat(image.height, image.width, cv.CV_8UC1)

@@ -48,17 +48,18 @@ class Skin_Model:
 		e = math.e
 		result = 0
 		
-		for (i in range(len(model))):
+		for i in range(len(model)):
 			mean = np.array(model[i][0])
-			cov = np.diagflat(np.array(model[i][1]))
+			cov = np.mat(np.diagflat(np.array(model[i][1])))
 			w = model[i][2]
 			
-			result += w * 1/(math.pow(2*pi,3/2)*math.sqrt(np.linalg.det(cov))) * math.pow(e,(-1/2*(pixel-mean)).T*cov.I*(pixel-mean))
+			result += w * (1/(math.pow(2*pi,3/2)*math.sqrt(np.linalg.det(cov)))) * (math.pow(e,(-1/2*np.mat(pixel-mean)*cov.I*(np.mat(pixel-mean)).T)))
+			#print result
 		return result
 	
-	def is_skin(pixel):
-		p_skin = probability(pixel,self.skin)
-		p_non_skin = probability(pixel,self.non_skin)
+	def is_skin(self,pixel):
+		p_skin = self.probability(pixel,self.skin)
+		p_non_skin = self.probability(pixel,self.non_skin)
 		
 		if (p_skin >= p_non_skin):
 			return True
