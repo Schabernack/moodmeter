@@ -7,7 +7,7 @@ class Mmeter:
   
   def __init__(self):
     pp = pprint.PrettyPrinter(indent=4)
-    img = cv.LoadImageM("img/10.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
+    img = cv.LoadImageM("img/1.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
     
     self.tempDir = "templates/"
     self.tempList = ("0.png","22.png","45.png","67.png","90.png","112.png","135.png","157.png","180.png")
@@ -22,10 +22,22 @@ class Mmeter:
     cv.ShowImage("canny",canny)
     contours =  cv.FindContours(canny,  cv.CreateMemStorage(),  cv.CV_RETR_LIST, cv.CV_CHAIN_APPROX_NONE, (0,0))
     
+    biggestContour = contours
+    
+    pp.pprint(biggestContour)
+    pp.pprint(contours)   
+    pp.pprint(    cv.ContourArea(contours))
     
     for sequence in self.contour_iterator(contours):          
-      for seqpoints in sequence:
-        cv.Circle(img, seqpoints, 1, (0,0,255))
+#      pp.pprint(cv.ContourArea(biggestContour))
+#      pp.pprint(cv.ContourArea(sequence))
+      if(cv.ContourArea(sequence) > cv.ContourArea(biggestContour)):
+        biggestContour = sequence
+    
+    pp.pprint(biggestContour)
+    for item in biggestContour:
+      cv.Circle(img, item, 1, (0,0,255))
+        
     
     self.getBestMatch(img)
     cv.ShowImage("bild", img)
