@@ -1,4 +1,3 @@
-import Image
 import cv
 import math
 import pprint
@@ -8,16 +7,16 @@ class Mmeter:
   
   def __init__(self):
     pp = pprint.PrettyPrinter(indent=4)
-#    img = cv.LoadImageM("img/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
-    img = cv.LoadImageM("/home/nico/Dropbox/ComputerVision/Code/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)   
+    img = cv.LoadImageM("img/1.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
+#    img = cv.LoadImageM("/home/nico/Dropbox/ComputerVision/Code/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)   
     self.tempDir = "templates/"
     self.tempList = ("0.png","22.png","45.png","67.png","90.png","112.png","135.png","157.png","180.png")
   
 
-#    self.openimg=self.fgdisc_rgb(img)
+    self.openimg=self.fgdisc_rgb(img)
 #    self.openimg = self.fill_hand(self.openimg)
       
-    self.openimg = self.skindisc(img)
+#    self.openimg = self.skindisc(img)
     
     cv.ShowImage("w00t", self.openimg)
 
