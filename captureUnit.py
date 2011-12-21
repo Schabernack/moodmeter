@@ -47,7 +47,10 @@ class CaptureUnit:
 		
 		filter = self.getSkinColor(image_roi)
 		img_out = self.filterImage(frame,filter)
-		cv.ShowImage('Filtered', img_out)			
+		cv.ShowImage('Output before', img_out)			
+
+		img_out = self.fillHand(img_out)
+		cv.ShowImage('Output after', img_out)			
 
 		while 1:		
 			k = cv.WaitKey(10)
@@ -55,6 +58,8 @@ class CaptureUnit:
 			if k == 0x1b: # ESC
 				print 'ESC pressed. Exiting ...'
 				break
+		
+		return img_out
 		
 		
 	## toDo: remove extreme values
@@ -65,6 +70,7 @@ class CaptureUnit:
 		mean = cv.Avg(img_skin)
 		
 		return (mean[0],mean[1],mean[2])
+		
 		
 	def filterImage(self,image,filter):
 		img_skin = cv.CreateMat(image.height, image.width, cv.CV_8UC3)
@@ -84,15 +90,27 @@ class CaptureUnit:
 	
 		cv.Threshold(h_plane, h_plane, filter[0]+0.2*filter[0], 255.0 , cv.CV_THRESH_BINARY_INV)
 		cv.Threshold(s_plane, s_plane, filter[1]-0.2*filter[1], 255.0 , cv.CV_THRESH_BINARY)
-		cv.Threshold(v_plane, v_plane, filter[2]-0.2*filter[2], 255.0 , cv.CV_THRESH_BINARY)
+		cv.Threshold(v_plane, v_plane, filter[2]-0.5*filter[2], 255.0 , cv.CV_THRESH_BINARY)
 				
 		img_and=cv.CreateMat(image.height, image.width, cv.CV_8UC1)
 		cv.And(h_plane, s_plane, img_and)
 		cv.And(img_and, v_plane, img_and)
 		
 		return img_and
-
 		
+	def fillHand(self,img):
+	    img_tmp = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+	    img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+	    kernel5=cv.CreateStructuringElementEx(2,1,1,0, cv.CV_SHAPE_RECT)
+	    kernell=cv.CreateStructuringElementEx(5,5,2,2, cv.CV_SHAPE_RECT)
+	 
+	    #cv.Erode(img, img_fill, iterations=2)  
+	    #cv.Erode(img_fill, img_fill, iterations=1, element=kernel5) 
+	    open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+	    cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
+	   
+	    return open_img
+   
 				
 if __name__ == "__main__":
 	cu = CaptureUnit()
