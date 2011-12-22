@@ -27,6 +27,7 @@ class CaptureUnit:
 			color = (0,0,255)
 			cv.Rectangle(frame, pt1,pt2 , color,thickness=2)
 		
+			cv.Flip(frame,None,1)
 		
 			# display webcam image
 			cv.ShowImage('Camera', frame)
@@ -49,7 +50,7 @@ class CaptureUnit:
 		img_out = self.filterImage(frame,filter)
 		cv.ShowImage('Output before', img_out)			
 
-		img_out = self.fillHand(img_out)
+		img_out = self.fillHand(img_out,pt1)
 		cv.ShowImage('Output after', img_out)			
 
 		while 1:		
@@ -98,19 +99,26 @@ class CaptureUnit:
 		
 		return img_and
 		
-	def fillHand(self,img):
-	    img_tmp = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
-	    img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
-	    kernel5=cv.CreateStructuringElementEx(2,1,1,0, cv.CV_SHAPE_RECT)
-	    kernell=cv.CreateStructuringElementEx(5,5,2,2, cv.CV_SHAPE_RECT)
+	def fillHand(self,img,point):
+		img_tmp = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		kernel5=cv.CreateStructuringElementEx(2,1,1,0, cv.CV_SHAPE_RECT)
+		kernell=cv.CreateStructuringElementEx(5,5,2,2, cv.CV_SHAPE_RECT)
 	 
-	    #cv.Erode(img, img_fill, iterations=2)  
-	    #cv.Erode(img_fill, img_fill, iterations=1, element=kernel5) 
-	    open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
-	    cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
-	   
-	    return open_img
-   
+		open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
+		
+		cv.Copy(open_img,img_fill)
+				
+		cv.FloodFill(img_fill,point,(120))
+		
+		cv.Threshold(img_fill, img_fill, 130, 255.0 , cv.CV_THRESH_TOZERO_INV)
+		cv.Threshold(img_fill, img_fill, 100, 255.0 , cv.CV_THRESH_BINARY)
+		
+		cv.ShowImage("Filled",img_fill)
+
+		return open_img
+	
 				
 if __name__ == "__main__":
 	cu = CaptureUnit()
