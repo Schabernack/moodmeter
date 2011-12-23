@@ -88,7 +88,7 @@ class Mmeter:
       if k == 0x1b: # ESC
         print 'ESC pressed. Exiting ...'
         break
-      elif k == 0x20: # Enter
+      elif k == 0x20: # Space
         image = cv.QueryFrame(capture)
         print 'Space pressed. Image taken'
         cv.Flip(image,None,1)
@@ -100,10 +100,6 @@ class Mmeter:
     cv.Copy(image, returnimage)
     return returnimage
     
-
-
-
-  
   
 if __name__ == "__main__":
   mm = Mmeter()
