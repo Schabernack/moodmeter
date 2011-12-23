@@ -8,46 +8,54 @@ class Mmeter:
   def __init__(self):
     pp = pprint.PrettyPrinter(indent=4)
     img = cv.LoadImageM("img/1.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
-#    img = cv.LoadImageM("/home/nico/Dropbox/ComputerVision/Code/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)   
+#   img = cv.LoadImageM("/home/nico/Dropbox/ComputerVision/Code/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)   
     self.tempDir = "templates/"
     self.tempList = ("0.png","22.png","45.png","67.png","90.png","112.png","135.png","157.png","180.png")
   
-
+    cv.NamedWindow("mainWin",cv.CV_WINDOW_FULLSCREEN)
     self.openimg=self.fgdisc_rgb(img)
-#    self.openimg = self.fill_hand(self.openimg)
-      
-#    self.openimg = self.skindisc(img)
     
-    cv.ShowImage("w00t", self.openimg)
+    cv.ShowImage("mainWin", self.openimg)
 
 
     canny = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 
     cv.Canny(self.openimg, canny, 50.0,210.0)
-    cv.ShowImage("canny",canny)
-    #contours =  cv.FindContours(canny,  cv.CreateMemStorage(),  cv.CV_RETR_LIST, cv.CV_CHAIN_APPROX_NONE, (0,0))
-    
-    #biggestContour = contours
-    
-    
-    #for sequence in self.contour_iterator(contours):          
-#      pp.pprint(cv.ContourArea(biggestContour))
-#      pp.pprint(cv.ContourArea(sequence))
-     # if(cv.CfontourArea(sequence) > cv.ContourArea(biggestContour)):
-      #  biggestContour = sequence
-    
-
-#    for item in biggestContour:
-#      cv.Circle(img, item, 1, (0,0,255))
-        
-    
-#    self.getBestMatch(img)
-#    cv.ShowImage("bild", img)
-#    cv.MoveWindow("bild", 20,20)  
+    cv.ShowImage("mainWin",canny)
 
     while cv.WaitKey(10)!=27:
       x=1 
-      
+  
+
+  #convert one channel img to 3 channel image 
+  def one_c_to_3_c(self,img):
+    mat = cv.CreateMat(img.height, img.width, cv.CV_8UC3)
+    cv.Cvt(img, mat, cv.CV_GRAY2BGR)
+
+
+  #2x2 images with same size
+  def show_multiple_images(self, images):
+    
+    cv.NamedWindow("FOOBAR", cv.CV_WINDOW_AUTOSIZE)
+    DispImg = cv.CreateImage((2* images[0].width +10, 2*images[0].height + 10), 8,3)
+
+    img = images[0]
+    cv.SetImageROI(DispImg, (0,0,img.width,img.height))
+    cv.Resize(img,DispImg)
+
+    img=images[1]
+    cv.SetImageROI(DispImg, (img.width,img.height,img.width,img.height))
+    cv.Resize(img,DispImg)     
+    cv.ResetImageROI(DispImg)
+
+    cv.ShowImage("FOOBAR", DispImg)
+    
+    #usw..... complete this method when prg finished
+
+    
+
+
+
   def contour_iterator(self,contour):
     while contour:
       yield contour
@@ -123,7 +131,7 @@ class Mmeter:
               cv.Set2D(img_skin, row, col, (255))
         else: 
           cv.Set2D(img_skin, row, col, (0))
-    cv.ShowImage("fgdiscrgb",img_skin)
+    cv.ShowImage("mainWin",img_skin)
 
     return img_skin
 
@@ -139,7 +147,7 @@ class Mmeter:
     open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
     cv.MorphologyEx(img_fill,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 30 )
    
-    cv.ShowImage("fillhand",open_img)
+    cv.ShowImage("mainWin",open_img)
     return open_img
 
   #foreground/background discrimination   
@@ -147,7 +155,7 @@ class Mmeter:
     img_hsv= cv.CreateMat(image.height, image.width, cv.CV_8UC3)
     cv.CvtColor(image, img_hsv, cv.CV_BGR2HSV)
     
-    cv.ShowImage("HSV",img_hsv)
+    cv.ShowImage("mainWin",img_hsv)
     cv.MoveWindow("HSV",500,500)
     
     img_tmp = cv.CreateMat(image.height, image.width, cv.CV_8UC3)
