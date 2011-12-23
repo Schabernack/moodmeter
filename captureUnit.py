@@ -1,5 +1,6 @@
 import cv
 import numpy as np
+from matchingUnit import MatchingUnit
 
 test = False
 
@@ -55,21 +56,16 @@ class CaptureUnit:
 		
 		hist = self.hs_histogram(image_roi)
 
-		img_skin = self.applyModelToImage(image,hist,"ROI Proj",pt1)
+		img_skin = self.applyModelToImage(image,hist,pt1)
 
 		img_out = self.fillHand(img_skin,pt1)
 		cv.ShowImage('Output', img_out)			
+				
+		return img_out
 
-		while 1:		
-			k = cv.WaitKey(10)
-
-			if k == 0x1b: # ESC
-				print 'ESC pressed. Exiting ...'
-				break
-
-		
+	## Test Modus (load image instead of webcam)
 	def test(self):
-		frame = cv.LoadImageM("img/test2.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
+		frame = cv.LoadImageM("img/test3.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
 		image = cv.CreateMat(frame.height,frame.width,cv.CV_8UC3)
 		img_hsv = cv.CreateMat(frame.height,frame.width,cv.CV_8UC3)
 
@@ -91,24 +87,19 @@ class CaptureUnit:
 		
 		hist = self.hs_histogram(image_roi)
 
-		img_skin = self.applyModelToImage(image,hist,"ROI Proj",pt1)
+		img_skin = self.applyModelToImage(image,hist,pt1)
 
 		img_out = self.fillHand(img_skin,pt1)
 		cv.ShowImage('Output', img_out)			
-
-		while 1:		
-			k = cv.WaitKey(10)
-
-			if k == 0x1b: # ESC
-				print 'ESC pressed. Exiting ...'
-				break
+		return img_out
 		
-		
-	def applyModelToImage(self,img,model,title,point):
+	## Calculate Skin probability with hist model
+	def applyModelToImage(self,img,model,point):
 		img_hsv = cv.CreateMat(img.height, img.width, cv.CV_8UC3)
 		img_out = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		img_bin = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		img_smooth = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 
 		cv.CvtColor(img,img_hsv,cv.CV_BGR2HSV)
 
@@ -119,33 +110,24 @@ class CaptureUnit:
 		planes = [h_plane,s_plane]
 
 		cv.CalcBackProject([cv.GetImage(i) for i in planes],img_out,model)
-		
-		cv.ShowImage(title,img_out)
-		cv.Threshold(img_out, img_bin, 100, 255.0 , cv.CV_THRESH_BINARY)
+				
+		cv.Threshold(img_out, img_bin, 10, 255.0 , cv.CV_THRESH_BINARY)
 		cv.ShowImage("Binary",img_bin)
 		
-		cv.Copy(img_bin,img_fill)
+		cv.Smooth(img_bin,img_smooth,smoothtype=cv.CV_MEDIAN,param1=7)
+		cv.ShowImage("Median Filter Binary",img_smooth)
 		
-
-		cv.FloodFill(img_fill,point,(120))
+		return img_smooth
+			
 		
-		
-		cv.Threshold(img_fill, img_fill, 130, 255.0 , cv.CV_THRESH_TOZERO_INV)
-		cv.Threshold(img_fill, img_fill, 100, 255.0 , cv.CV_THRESH_BINARY)
-	
-		cv.ShowImage("Flooded Bin",img_fill)
-
-		
-		return img_bin
-				
+	## Floodfill img from starting point	
 	def fillHand(self,img,point):
 		img_tmp = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
-		kernel5=cv.CreateStructuringElementEx(2,1,1,0, cv.CV_SHAPE_RECT)
-		kernell=cv.CreateStructuringElementEx(3,3,1,1, cv.CV_SHAPE_RECT)
+		kernell=cv.CreateStructuringElementEx(7,7,3,3, cv.CV_SHAPE_RECT)
 	 
 		open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
-		cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 1 )
+		cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
 		cv.ShowImage("Opened",open_img)
 		cv.Copy(open_img,img_fill)
 				
@@ -158,7 +140,7 @@ class CaptureUnit:
 		
 		return img_fill
 	
-	
+	## Calculate Hue/Saturation Histogram for src image
 	def hs_histogram(self,src):
 		# Convert to HSV
 		hsv = cv.CreateImage(cv.GetSize(src), 8, 3)
@@ -185,7 +167,7 @@ class CaptureUnit:
 		(_, max_value, _, _) = cv.GetMinMaxHistValue(hist)
 	
 		hist_img = cv.CreateImage((h_bins*scale, s_bins*scale), 8, 3)
-	
+		'''	
 		for h in range(h_bins):
 			for s in range(s_bins):
 				bin_val = cv.QueryHistValue_2D(hist, h, s)
@@ -195,16 +177,23 @@ class CaptureUnit:
 							 ((h+1)*scale - 1, (s+1)*scale - 1),
 							 cv.RGB(intensity, intensity, intensity), 
 							 cv.CV_FILLED)
+		'''
 		return hist
-	
+			
 	
 if __name__ == "__main__":
 	cu = CaptureUnit()
-	if test:
-		cu.test()
-	else:
-		cu.run()	
+	mu = MatchingUnit()
+	img = cu.run()
+	result = mu.getBestMatch(img)
 	
+	print "Angle\t",result	
 	
-	
+	while 1:		
+		k = cv.WaitKey(10)
+
+		if k == 0x1b: # ESC
+			print 'ESC pressed. Exiting ...'
+			break
+
 	
