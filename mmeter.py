@@ -3,6 +3,8 @@ import math
 import pprint
 from processUnit import ProcessUnit
 from matchingUnit import MatchingUnit
+from logger import Logger
+
 
 class Mmeter:
   
@@ -135,7 +137,11 @@ if __name__ == "__main__":
   
   mm.showResult(image)
 
-  
+  Logger.addImage(processed, "test")
+  print "asdsad"
+  Logger.logImages()
+
+
   while cv.WaitKey(10)!=27:
     x=1
   
