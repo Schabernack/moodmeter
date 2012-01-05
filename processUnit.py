@@ -44,7 +44,7 @@ class ProcessUnit:
 		#cv.ShowImage("bgr", image)		
 		cv.CvtColor(image,img_hsv,cv.CV_BGR2HSV)
 
-		cv.ShowImage("HSV",img_hsv)
+		#cv.ShowImage("HSV",img_hsv)
 		
 
 		hist = self.hs_histogram(image_roi)
@@ -111,13 +111,11 @@ class ProcessUnit:
 	 
 		open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
-		#cv.ShowImage("Opened",open_img)
+		cv.ShowImage("Opened",open_img)
 		cv.Copy(open_img,img_fill)
 				
 		cv.FloodFill(img_fill,point,(120))
-		
-		cv.ShowImage("Flooded",img_fill)
-		
+				
 		cv.Threshold(img_fill, img_fill, 130, 255.0 , cv.CV_THRESH_TOZERO_INV)
 		cv.Threshold(img_fill, img_fill, 100, 255.0 , cv.CV_THRESH_BINARY)
 		

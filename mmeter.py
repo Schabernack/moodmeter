@@ -52,7 +52,7 @@ class Mmeter:
     color = (0,0,255)
     cv.Rectangle(frame, pt1,pt2 , color,thickness=2)
     
-    cv.ShowImage("Image", frame)
+    #cv.ShowImage("Image", frame)
     return image
 
   #return unaltered rgb pic
@@ -103,18 +103,18 @@ if __name__ == "__main__":
   mm = Mmeter()
 
   image = mm.get_cam_pic()
-  cv.ShowImage("Original", image)
+  #image = mm.load_pic_from_hd()
+
+  #cv.ShowImage("Original", image)
   
   cu = ProcessUnit()
   mu = MatchingUnit()
   processed = cu.processImage(image)
 
-  cv.ShowImage("Processed", processed)
-  mu.testRect(processed)
+  #cv.ShowImage("Processed", processed)
+  mu.run(processed)
   	
 
   while cv.WaitKey(10)!=27:
     x=1
-  
-  
   
