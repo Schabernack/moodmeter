@@ -4,15 +4,22 @@ import numpy as np
 
 
 class MatchingUnit:
-	
-	def __init__(self):
-		self.tempDir = "templates2/"
-		#self.tempList = ("0.png","22.png","45.png","67.png","90.png","112.png","135.png","157.png","180.png")
-		self.tempList = ("0.png","45.png","90.png","135.png","180.png")
-	
+		
 	def run(self,image):
-		orientation = self.getOrientation(image)
+		ori = self.getOrientation(image)
 		angle = self.getAngle(image)
+		
+		print ori,angle
+		
+		if ori == "up" and angle > 90:
+			angle = 180 - angle
+		elif ori == "down" and angle < 90:
+			angle = 180 + angle
+		elif ori == "right" and angle > 180:
+			angle = 360 - angle
+				
+			
+		return angle
 		
 	
 	def getOrientation(self,image):
@@ -70,11 +77,11 @@ class MatchingUnit:
 		
 		cv.CvtColor(image,img_cont,cv.CV_GRAY2BGR)
 		contour = cv.FindContours(img_tmp,cv.CreateMemStorage(),mode=cv.CV_RETR_EXTERNAL,method=cv.CV_CHAIN_APPROX_NONE)
-		cv.DrawContours(img_cont,contour,(0,0,255),(0,255,0),0,thickness=2)
+		cv.DrawContours(img_cont,contour,(255,0,0),(0,255,0),0,thickness=2)
 		rect = cv.BoundingRect(contour)
 		cv.Rectangle(img_cont,(int(rect[0]),int(rect[1])),(int(rect[0]+rect[2]),int(rect[1]+rect[3])),(0,255,0))	
-		hull = cv.ConvexHull2(contour,cv.CreateMemStorage(),return_points=1)
-		cv.PolyLine(img_cont, [hull], 1, (255,0,0),thickness=2)
+		#hull = cv.ConvexHull2(contour,cv.CreateMemStorage(),return_points=1)
+		#cv.PolyLine(img_cont, [hull], 1, (255,0,0),thickness=2)
 			
 		line = cv.FitLine(contour,cv.CV_DIST_L2,0,0.01,0.01)
 		
@@ -91,14 +98,27 @@ class MatchingUnit:
 		
 		
 		v = (v0,v1)
-		c  = np.dot(u,v)/np.linalg.norm(u)/np.linalg.norm(v)
+		c	= np.dot(u,v)/np.linalg.norm(u)/np.linalg.norm(v)
 		angle = np.arccos(c)
 		angle *= 180/np.pi
 				
-		cv.Line(img_cont, pt0, pt1, (0,0,255), thickness=1, lineType=8, shift=0)
-		cv.Line(img_cont, pt2, pt3, (255,255,0), thickness=1, lineType=8, shift=0)
+		cv.Line(img_cont, pt0, pt1, (0,0,255), thickness=2, lineType=8, shift=0)
+		cv.Line(img_cont, pt2, pt3, (0,140,255), thickness=2, lineType=8, shift=0)
 
+		
+		
+		font = cv.InitFont(cv.CV_FONT_HERSHEY_COMPLEX_SMALL,1.0,1.0,thickness=1)
+		cv.PutText(img_cont, "Legend:", (10,20) , font, (255,255,255))
+			
+		font = cv.InitFont(cv.CV_FONT_HERSHEY_COMPLEX_SMALL,0.7,0.7,thickness=1)
+		cv.PutText(img_cont, "Contour", (10,50) , font, (255,0,0))
+		cv.PutText(img_cont, "Bounding Rectangle", (10,70) , font, (0,255,0))
+		cv.PutText(img_cont, "Fitted Line", (10,90) , font, (0,0,255))
+		cv.PutText(img_cont, "Reference Line", (10,110) , font, (0,140,255))
+
+		
 		cv.ShowImage("Geometry Magic",img_cont)
+		
 		
 		return angle
 		
