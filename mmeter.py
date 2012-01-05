@@ -98,6 +98,23 @@ class Mmeter:
     cv.Copy(image, returnimage)
     return returnimage
     
+    def showResult(self,image):
+      if angle < 23:
+        mood = "Amazing!!!"
+      elif angle < 67:
+        mood = "Good!"
+      elif angle < 112:
+        mood = "Ok .."
+      elif angle < 155:
+        mood = "Bad."
+      else:
+        mood = "I Hate You!!"
+  
+      font = cv.InitFont(cv.CV_FONT_HERSHEY_DUPLEX,1.0,1.0,thickness=2)
+  
+      cv.PutText(image, mood, (50,50) , font, (0,255,255))
+  
+      cv.ShowImage("MoodMeter",image)
   
 if __name__ == "__main__":
   mm = Mmeter()
@@ -112,9 +129,13 @@ if __name__ == "__main__":
   processed = cu.processImage(image)
 
   #cv.ShowImage("Processed", processed)
-  mu.run(processed)
+  angle = mu.run(processed)
   	
+  print angle
+  
+  mm.showResult(image)
 
+  
   while cv.WaitKey(10)!=27:
     x=1
   
