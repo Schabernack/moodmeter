@@ -76,11 +76,11 @@ class Mmeter:
     elif angle < 67:
       mood = "Good!"
     elif angle < 112:
-      mood = "Ok .."
+      mood = "Meh .."
     elif angle < 155:
       mood = "Bad."
     else:
-      mood = "I Hate You!!"
+      mood = "Catastrophic!!"
   
     font = cv.InitFont(cv.CV_FONT_HERSHEY_DUPLEX,1.0,1.0,thickness=2)
   

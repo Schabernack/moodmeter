@@ -1,3 +1,4 @@
+#coding: utf8
 import cv
 import math
 import numpy as np
@@ -9,7 +10,7 @@ class MatchingUnit:
 		
 	def run(self,image):
 		ori = self.getOrientation(image)
-		angle = self.getAngle(image)
+		img_cont, angle = self.getAngle(image)
 		
 		print ori,angle
 		
@@ -20,7 +21,10 @@ class MatchingUnit:
 		elif ori == "right" and angle > 180:
 			angle = 360 - angle
 				
-			
+		font = cv.InitFont(cv.CV_FONT_HERSHEY_COMPLEX_SMALL,1.0,1.0,thickness=1)
+		cv.PutText(img_cont, "Angle: ", (10,440) , font, (255,255,255))
+		cv.PutText(img_cont, str(str(round(angle,1))+"Degrees"), (10,460) , font, (255,255,255))
+		
 		return angle
 		
 	
@@ -82,8 +86,6 @@ class MatchingUnit:
 		cv.DrawContours(img_cont,contour,(255,0,0),(0,255,0),0,thickness=2)
 		rect = cv.BoundingRect(contour)
 		cv.Rectangle(img_cont,(int(rect[0]),int(rect[1])),(int(rect[0]+rect[2]),int(rect[1]+rect[3])),(0,255,0))	
-		#hull = cv.ConvexHull2(contour,cv.CreateMemStorage(),return_points=1)
-		#cv.PolyLine(img_cont, [hull], 1, (255,0,0),thickness=2)
 			
 		line = cv.FitLine(contour,cv.CV_DIST_L2,0,0.01,0.01)
 		
@@ -107,8 +109,6 @@ class MatchingUnit:
 		cv.Line(img_cont, pt0, pt1, (0,0,255), thickness=2, lineType=8, shift=0)
 		cv.Line(img_cont, pt2, pt3, (0,140,255), thickness=2, lineType=8, shift=0)
 
-		
-		
 		font = cv.InitFont(cv.CV_FONT_HERSHEY_COMPLEX_SMALL,1.0,1.0,thickness=1)
 		cv.PutText(img_cont, "Legend:", (10,20) , font, (255,255,255))
 			
@@ -120,8 +120,7 @@ class MatchingUnit:
 
 		Logger.addImage(img_cont, "Geometry")
 		pv.addColor(img_cont,"geometry")
-
 		
-		return angle
+		return img_cont,angle
 		
 		
