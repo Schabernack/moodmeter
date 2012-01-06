@@ -4,38 +4,13 @@ import pprint
 from processUnit import ProcessUnit
 from matchingUnit import MatchingUnit
 from logger import Logger
+from pictureviewer import Pictureviewer as pv
 
 
 class Mmeter:
   
   def __init__(self):
     pp = pprint.PrettyPrinter(indent=4)   
-  
-
-  #convert one channel img to 3 channel image 
-  def one_c_to_3_c(self,img):
-    mat = cv.CreateMat(img.height, img.width, cv.CV_8UC3)
-    cv.Cvt(img, mat, cv.CV_GRAY2BGR)
-
-
-  #2x2 images with same size
-  def show_multiple_images(self, images):
-    
-    cv.NamedWindow("FOOBAR", cv.CV_WINDOW_AUTOSIZE)
-    DispImg = cv.CreateImage((2* images[0].width +10, 2*images[0].height + 10), 8,3)
-
-    img = images[0]
-    cv.SetImageROI(DispImg, (0,0,img.width,img.height))
-    cv.Resize(img,DispImg)
-
-    img=images[1]
-    cv.SetImageROI(DispImg, (img.width,img.height,img.width,img.height))
-    cv.Resize(img,DispImg)     
-    cv.ResetImageROI(DispImg)
-
-    cv.ShowImage("FOOBAR", DispImg)
-    
-    #usw..... complete this method when program finished
 
   # return unaltered  pic
   def load_pic_from_hd(self):
@@ -49,7 +24,6 @@ class Mmeter:
     color = (0,0,255)
     cv.Rectangle(frame, pt1,pt2 , color,thickness=2)
     
-    #cv.ShowImage("Image", frame)
     return image
 
   #return unaltered rgb pic
@@ -112,8 +86,9 @@ class Mmeter:
   
     cv.PutText(image, mood, (50,50) , font, (0,255,255))
   
-    #cv.ShowImage("MoodMeter",image)
     Logger.addImage(image, "Result")
+    pv.addColor(image,"result")
+
     
   def run(self):
     pu = ProcessUnit()
@@ -130,7 +105,7 @@ class Mmeter:
     angle = mu.run(processed)
     	    
     self.showResult(image,angle)
-  
+    pv.showPictures()
     Logger.logImages()
     
   

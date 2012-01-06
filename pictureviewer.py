@@ -74,10 +74,6 @@ class	Pictureviewer:
 		else:
 			resizeratio = screen_height / picheight
 
-		print picwidth, picheight, resizeratio
-
-		print picwidth*resizeratio, picheight*resizeratio
-
 		resized = cv.CreateImage((int(picwidth*resizeratio), int(picheight*resizeratio)), 8,3)
 		cv.Resize(DispImg, resized)
 

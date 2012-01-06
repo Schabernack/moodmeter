@@ -2,6 +2,7 @@ import cv
 import math
 import numpy as np
 from logger import Logger
+from pictureviewer import Pictureviewer as pv
 
 
 class MatchingUnit:
@@ -117,9 +118,8 @@ class MatchingUnit:
 		cv.PutText(img_cont, "Fitted Line", (10,90) , font, (0,0,255))
 		cv.PutText(img_cont, "Reference Line", (10,110) , font, (0,140,255))
 
-		
-		cv.ShowImage("Geometry Magic",img_cont)
 		Logger.addImage(img_cont, "Geometry")
+		pv.addColor(img_cont,"geometry")
 
 		
 		return angle

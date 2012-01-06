@@ -2,6 +2,7 @@ import cv
 import numpy as np
 from matchingUnit import MatchingUnit
 from logger import Logger
+from pictureviewer import Pictureviewer as pv
 
 test = False
 
@@ -36,6 +37,7 @@ class ProcessUnit:
 
 		cv.CvtColor(img,img_hsv,cv.CV_BGR2HSV)
 		Logger.addImage(img_hsv, "img_hsv")
+		pv.addColor(img_hsv,"hsv")
 		
 		h_plane=cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		s_plane=cv.CreateMat(img.height, img.width, cv.CV_8UC1)
@@ -46,14 +48,14 @@ class ProcessUnit:
 		cv.CalcBackProject([cv.GetImage(i) for i in planes],img_out,model)
 				
 		cv.Threshold(img_out, img_bin, 10, 255.0 , cv.CV_THRESH_BINARY)
-		cv.ShowImage("Binary",img_bin)
 		Logger.addImage(img_bin, "img_binary")
+		pv.addBinary(img_bin,"binary")
 		cv.Erode(img_bin,img_ero,iterations=2)
 		Logger.addImage(img_ero, "img_eroded")
 
 		cv.Smooth(img_ero,img_smooth,smoothtype=cv.CV_MEDIAN,param1=7)
-		cv.ShowImage("Median Filter Binary",img_smooth)
 		Logger.addImage(img_smooth, "img_median")
+		pv.addBinary(img_smooth,"median")
 
 		return img_smooth
 			
@@ -68,6 +70,7 @@ class ProcessUnit:
 		cv.MorphologyEx(img,img_open, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
 		
 		Logger.addImage(img_open, "img_opened")
+		pv.addBinary(img_open,"opened")
 
 		cv.Copy(img_open,img_fill)
 				

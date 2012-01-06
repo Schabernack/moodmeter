@@ -26,9 +26,9 @@ class Logger:
 		os.makedirs(imgpath)
 		
 		for image in Logger.__imagelist:
-			print "Saving ", image[1]
 			cv.SaveImage(imgpath+'/'+image[1]+'.png', image[0])
-
+		
+		print "Saved to Logfolder",id
 		Logger.resetList()
 
 	##fuege img zu interner liste hinzu (filename ist name unter dem datei spaeter gespeichert wird)
