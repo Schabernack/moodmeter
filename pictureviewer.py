@@ -36,9 +36,9 @@ class	Pictureviewer:
 
 		picwidth = 3 * Pictureviewer.__piclist['1'].width
 		picheight = 2*Pictureviewer.__piclist['1'].height
+		DispImg = cv.CreateImage((picwidth +10,  picheight + 10), 8,3)
 
 		img= Pictureviewer.__piclist['hsv']
-		DispImg = cv.CreateImage((picwidth +10,  picheight + 10), 8,3)
 		cv.Resize(img,DispImg)
 
 		img= Pictureviewer.__piclist['binary']
