@@ -23,7 +23,7 @@ class MatchingUnit:
 				if angle >= 180:
 					angle = 360 - angle
 				else:
-					angle = angle - 90
+					angle = 180 - angle
 				
 		font = cv.InitFont(cv.CV_FONT_HERSHEY_COMPLEX_SMALL,1.0,1.0,thickness=1)
 		cv.PutText(img_cont, "Angle: ", (10,400) , font, (255,255,255))
