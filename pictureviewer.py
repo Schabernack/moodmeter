@@ -34,8 +34,8 @@ class	Pictureviewer:
 
 		cv.NamedWindow("FOOBAR", cv.CV_WINDOW_AUTOSIZE)
 
-		picwidth = 3 * Pictureviewer.__piclist['1'].width
-		picheight = 2*Pictureviewer.__piclist['1'].height
+		picwidth = 3 * Pictureviewer.__piclist['hsv'].width
+		picheight = 2*Pictureviewer.__piclist['hsv'].height
 		DispImg = cv.CreateImage((picwidth +10,  picheight + 10), 8,3)
 
 		img= Pictureviewer.__piclist['hsv']
