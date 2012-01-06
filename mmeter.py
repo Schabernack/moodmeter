@@ -112,24 +112,25 @@ class Mmeter:
   
     cv.PutText(image, mood, (50,50) , font, (0,255,255))
   
-    cv.ShowImage("MoodMeter",image)
+    #cv.ShowImage("MoodMeter",image)
+    Logger.addImage(image, "Result")
     
   def run(self):
-    cu = ProcessUnit()
+    pu = ProcessUnit()
     mu = MatchingUnit()
     
     image = self.get_cam_pic()
     
-    processed = cu.processImage(image)
+    img_orig = cv.CreateMat(image.height,image.width,cv.CV_8UC3)
+    cv.Copy(image,img_orig)
+    Logger.addImage(img_orig, "img_original")
+
+    processed = pu.processImage(image)
   
     angle = mu.run(processed)
-    	
-    print angle
-    
+    	    
     self.showResult(image,angle)
   
-    Logger.addImage(processed, "test")
-    print "asdsad"
     Logger.logImages()
     
   
