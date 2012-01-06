@@ -1,6 +1,7 @@
 import cv
 import math
 import numpy as np
+from logger import Logger
 
 
 class MatchingUnit:
@@ -118,7 +119,8 @@ class MatchingUnit:
 
 		
 		cv.ShowImage("Geometry Magic",img_cont)
-		
+		Logger.addImage(img_cont, "Geometry")
+
 		
 		return angle
 		

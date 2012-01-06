@@ -1,34 +1,13 @@
 import cv
 import numpy as np
 from matchingUnit import MatchingUnit
+from logger import Logger
 
 test = False
 
 class ProcessUnit:
 	
-	def run(self):
-
-				
-		## Image Processing
-		roi = (pt1[0],pt1[1],60,60)
-		image_roi = cv.GetSubRect(image,roi)
-		
-		img_hsv = cv.CreateMat(frame.height,frame.width,cv.CV_8UC3)
-
-		cv.CvtColor(image,img_hsv,cv.CV_BGR2HSV)
-		#cv.ShowImage("HSV",img_hsv)
-		
-		hist = self.hs_histogram(image_roi)
-
-		img_skin = self.applyModelToImage(image,hist,pt1)
-
-		img_out = self.fillHand(img_skin,pt1)
-		#cv.ShowImage('Output', img_out)			
-				
-		return img_out
-
-	## Test Modus (load image instead of webcam
-
+	
 	## returns completely processed image
 	## ideally this is just the white silhouette of the hand on a black sheet
 	def processImage(self, image):
@@ -39,39 +18,11 @@ class ProcessUnit:
 		roi = (pt1[0],pt1[1],60,60)
 		image_roi = cv.GetSubRect(image,roi)
 		
-		img_hsv = cv.CreateMat(image.height,image.width,cv.CV_8UC3)
-		
-		#cv.ShowImage("bgr", image)		
-		cv.CvtColor(image,img_hsv,cv.CV_BGR2HSV)
-
-		#cv.ShowImage("HSV",img_hsv)
-		
-
 		hist = self.hs_histogram(image_roi)
 
 		img_skin = self.applyModelToImage(image,hist,pt1)
-
-		img_out = self.fillHand(img_skin,pt1)
-		#cv.ShowImage('Output', img_out)			
+		img_out = self.fillHand(img_skin,pt1)		
 				
-		return img_out
-
-
-	def test(self):
-		
-		## Image Processing
-		roi = (pt1[0],pt1[1],60,60)
-		image_roi = cv.GetSubRect(image,roi)
-		
-		cv.CvtColor(image,img_hsv,cv.CV_BGR2HSV)
-		#cv.ShowImage("HSV",img_hsv)
-	
-		hist = self.hs_histogram(image_roi)
-
-		img_skin = self.applyModelToImage(image,hist,pt1)
-
-		img_out = self.fillHand(img_skin,pt1)
-		#cv.ShowImage('Output', img_out)			
 		return img_out
 		
 	## Calculate Skin probability with hist model
@@ -79,11 +30,13 @@ class ProcessUnit:
 		img_hsv = cv.CreateMat(img.height, img.width, cv.CV_8UC3)
 		img_out = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		img_bin = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		img_ero = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		img_smooth = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 
 		cv.CvtColor(img,img_hsv,cv.CV_BGR2HSV)
-
+		Logger.addImage(img_hsv, "img_hsv")
+		
 		h_plane=cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		s_plane=cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		
@@ -94,12 +47,14 @@ class ProcessUnit:
 				
 		cv.Threshold(img_out, img_bin, 10, 255.0 , cv.CV_THRESH_BINARY)
 		cv.ShowImage("Binary",img_bin)
-		
-		cv.Erode(img_bin,img_bin,iterations=2)
-		
-		cv.Smooth(img_bin,img_smooth,smoothtype=cv.CV_MEDIAN,param1=7)
+		Logger.addImage(img_bin, "img_binary")
+		cv.Erode(img_bin,img_ero,iterations=2)
+		Logger.addImage(img_ero, "img_eroded")
+
+		cv.Smooth(img_ero,img_smooth,smoothtype=cv.CV_MEDIAN,param1=7)
 		cv.ShowImage("Median Filter Binary",img_smooth)
-		
+		Logger.addImage(img_smooth, "img_median")
+
 		return img_smooth
 			
 		
@@ -109,13 +64,16 @@ class ProcessUnit:
 		img_fill = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		kernell=cv.CreateStructuringElementEx(7,7,3,3, cv.CV_SHAPE_RECT)
 	 
-		open_img = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
-		cv.MorphologyEx(img,open_img, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
-		cv.ShowImage("Opened",open_img)
-		cv.Copy(open_img,img_fill)
+		img_open = cv.CreateMat(img.height, img.width, cv.CV_8UC1)
+		cv.MorphologyEx(img,img_open, img_tmp, kernell, cv.CV_MOP_CLOSE, 2 )
+		
+		Logger.addImage(img_open, "img_opened")
+
+		cv.Copy(img_open,img_fill)
 				
 		cv.FloodFill(img_fill,point,(120))
-				
+		Logger.addImage(img_fill, "img_filled")
+
 		cv.Threshold(img_fill, img_fill, 130, 255.0 , cv.CV_THRESH_TOZERO_INV)
 		cv.Threshold(img_fill, img_fill, 100, 255.0 , cv.CV_THRESH_BINARY)
 		
@@ -151,20 +109,4 @@ class ProcessUnit:
 
 		return hist
 			
-	
-if __name__ == "__main__":
-	cu = CaptureUnit()
-	mu = MatchingUnit()
-	img = cu.run()
-	result = mu.getBestMatch(img)
-	
-	print "Angle\t",result	
-	
-	while 1:		
-		k = cv.WaitKey(10)
-
-		if k == 0x1b: # ESC
-			print 'ESC pressed. Exiting ...'
-			break
-
 	

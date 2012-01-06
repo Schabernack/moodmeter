@@ -9,12 +9,7 @@ from logger import Logger
 class Mmeter:
   
   def __init__(self):
-    pp = pprint.PrettyPrinter(indent=4)
-    img = cv.LoadImageM("img/1.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)
-#   img = cv.LoadImageM("/home/nico/Dropbox/ComputerVision/Code/1_small.jpg",cv.CV_LOAD_IMAGE_UNCHANGED)   
-    self.tempDir = "templates/"
-    self.tempList = ("0.png","22.png","45.png","67.png","90.png","112.png","135.png","157.png","180.png")
-   
+    pp = pprint.PrettyPrinter(indent=4)   
   
 
   #convert one channel img to 3 channel image 
@@ -91,6 +86,7 @@ class Mmeter:
         print 'ESC pressed. Exiting ...'
         break
       elif k == 0x20: # Space
+        cv.DestroyWindow('Camera')
         image = cv.QueryFrame(capture)
         print 'Space pressed. Image taken'
         cv.Flip(image,None,1)
@@ -100,7 +96,7 @@ class Mmeter:
     cv.Copy(image, returnimage)
     return returnimage
     
-  def showResult(self,image):
+  def showResult(self,image,angle):
     if angle < 23:
       mood = "Amazing!!!"
     elif angle < 67:
@@ -116,32 +112,41 @@ class Mmeter:
   
     cv.PutText(image, mood, (50,50) , font, (0,255,255))
   
-    cv.ShowImage("MoodMeter",image)
+    #cv.ShowImage("MoodMeter",image)
+    Logger.addImage(image, "Result")
+    
+  def run(self):
+    pu = ProcessUnit()
+    mu = MatchingUnit()
+    
+    image = self.get_cam_pic()
+    
+    img_orig = cv.CreateMat(image.height,image.width,cv.CV_8UC3)
+    cv.Copy(image,img_orig)
+    Logger.addImage(img_orig, "img_original")
+
+    processed = pu.processImage(image)
+  
+    angle = mu.run(processed)
+    	    
+    self.showResult(image,angle)
+  
+    Logger.logImages()
+    
   
 if __name__ == "__main__":
   mm = Mmeter()
-
-  image = mm.get_cam_pic()
-  #image = mm.load_pic_from_hd()
-
-  #cv.ShowImage("Original", image)
-  
-  cu = ProcessUnit()
-  mu = MatchingUnit()
-  processed = cu.processImage(image)
-
-  #cv.ShowImage("Processed", processed)
-  angle = mu.run(processed)
-  	
-  print angle
-  
-  mm.showResult(image)
-
-  Logger.addImage(processed, "test")
-  print "asdsad"
-  Logger.logImages()
+  mm.run()
 
 
-  while cv.WaitKey(10)!=27:
-    x=1
-  
+  while 1:
+    k = cv.WaitKey(10)
+
+    if k == 0x1b: # ESC
+      print 'ESC pressed. Exiting ...'
+      break
+    elif k == 0x20: # Space
+      cv.DestroyAllWindows()
+      mm.run()
+
+

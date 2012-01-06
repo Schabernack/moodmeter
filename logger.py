@@ -15,6 +15,8 @@ class Logger:
 		logfolder = r'./log' 
 		if not os.path.exists(logfolder): os.makedirs(logfolder) 
 		folderlist = os.listdir(logfolder)
+		if ".DS_Store" in folderlist:
+				folderlist.remove(".DS_Store")
 		if not folderlist:
 			id = '1'
 		else:
@@ -25,7 +27,7 @@ class Logger:
 		
 		for image in Logger.__imagelist:
 			print "Saving ", image[1]
-			cv.SaveImage(imgpath+'/'+image[1]+'.jpg', image[0])
+			cv.SaveImage(imgpath+'/'+image[1]+'.png', image[0])
 
 		Logger.resetList()
 
