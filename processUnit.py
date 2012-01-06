@@ -42,8 +42,8 @@ class ProcessUnit:
 		h_plane=cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		s_plane=cv.CreateMat(img.height, img.width, cv.CV_8UC1)
 		
-		cv.Split(img_hsv, h_plane, s_plane,None, None)
-		planes = [h_plane,s_plane]
+		cv.Split(img_hsv, h_plane, s_plane, None, None)
+		planes = [h_plane, s_plane]
 
 		cv.CalcBackProject([cv.GetImage(i) for i in planes],img_out,model)
 				
