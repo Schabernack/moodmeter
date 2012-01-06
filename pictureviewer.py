@@ -37,27 +37,27 @@ class	Pictureviewer:
 		picwidth = 3 * Pictureviewer.__piclist['1'].width
 		picheight = 2*Pictureviewer.__piclist['1'].height
 
-		img= Pictureviewer.__piclist['1']
+		img= Pictureviewer.__piclist['hsv']
 		DispImg = cv.CreateImage((picwidth +10,  picheight + 10), 8,3)
 		cv.Resize(img,DispImg)
 
-		img= Pictureviewer.__piclist['2']
+		img= Pictureviewer.__piclist['binary']
 		cv.SetImageROI(DispImg, (img.width,0,img.width,img.height))
 		cv.Resize(img,DispImg)     
 
-		img= Pictureviewer.__piclist['3']
+		img= Pictureviewer.__piclist['median']
 		cv.SetImageROI(DispImg, (2*img.width,0,img.width,img.height))
 		cv.Resize(img,DispImg)     
 
-		img= Pictureviewer.__piclist['4']
+		img= Pictureviewer.__piclist['opened']
 		cv.SetImageROI(DispImg, (0,img.height,img.width,img.height))
 		cv.Resize(img,DispImg)     
 
-		img= Pictureviewer.__piclist['5']
+		img= Pictureviewer.__piclist['geometry']
 		cv.SetImageROI(DispImg, (img.width,img.height,img.width,img.height))
 		cv.Resize(img,DispImg)     
 
-		img= Pictureviewer.__piclist['6']
+		img= Pictureviewer.__piclist['result']
 		cv.SetImageROI(DispImg, (2*img.width,img.height,img.width,img.height))
 		cv.Resize(img,DispImg)     
 
