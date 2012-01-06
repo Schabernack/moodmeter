@@ -18,13 +18,19 @@ class MatchingUnit:
 			angle = 180 - angle
 		elif ori == "down" and angle < 90:
 			angle = 180 + angle
-		elif ori == "right" and angle > 180:
-			angle = 360 - angle
+		elif ori == "right":
+			if angle >= 90:
+				if angle >= 180:
+					angle = 360 - angle
+				else:
+					angle = angle - 90
 				
 		font = cv.InitFont(cv.CV_FONT_HERSHEY_COMPLEX_SMALL,1.0,1.0,thickness=1)
-		cv.PutText(img_cont, "Angle: ", (10,440) , font, (255,255,255))
-		cv.PutText(img_cont, str(str(round(angle,1))+"Degrees"), (10,460) , font, (255,255,255))
-		
+		cv.PutText(img_cont, "Angle: ", (10,400) , font, (255,255,255))
+		cv.PutText(img_cont, str(str(round(angle,1))+"Degrees"), (10,420) , font, (255,255,255))
+		cv.PutText(img_cont, "Orientation: ", (10,440) , font, (255,255,255))
+		cv.PutText(img_cont, ori, (10,460) , font, (255,255,255))
+
 		return angle
 		
 	

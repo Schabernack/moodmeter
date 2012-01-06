@@ -71,7 +71,7 @@ class Mmeter:
     return returnimage
     
   def showResult(self,image,angle):
-    if angle < 23:
+    if angle < 10:
       mood = "Amazing!!!"
     elif angle < 67:
       mood = "Good!"
