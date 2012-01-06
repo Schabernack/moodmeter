@@ -32,13 +32,14 @@ class	Pictureviewer:
 	def showPictures():
 	#3x2 (w,h) images with same size
 
-		cv.NamedWindow("FOOBAR", cv.CV_WINDOW_AUTOSIZE)
+		cv.NamedWindow("MoodMeter", cv.CV_WINDOW_AUTOSIZE)
 
 		picwidth = 3 * Pictureviewer.__piclist['hsv'].width
 		picheight = 2*Pictureviewer.__piclist['hsv'].height
 		DispImg = cv.CreateImage((picwidth +10,  picheight + 10), 8,3)
 
 		img= Pictureviewer.__piclist['hsv']
+		cv.SetImageROI(DispImg, (0,0,img.width,img.height))
 		cv.Resize(img,DispImg)
 
 		img= Pictureviewer.__piclist['binary']
@@ -80,6 +81,6 @@ class	Pictureviewer:
 		resized = cv.CreateImage((int(picwidth*resizeratio), int(picheight*resizeratio)), 8,3)
 		cv.Resize(DispImg, resized)
 
-		cv.ShowImage("FOOBAR", resized)
+		cv.ShowImage("MoodMeter", resized)
 	    
 	    
