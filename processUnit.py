@@ -23,7 +23,8 @@ class ProcessUnit:
 
 		img_skin = self.applyModelToImage(image,hist,pt1)
 		img_out = self.fillHand(img_skin,pt1)		
-				
+		
+
 		return img_out
 		
 	## Calculate Skin probability with hist model
@@ -111,5 +112,6 @@ class ProcessUnit:
 		hist_img = cv.CreateImage((h_bins*scale, s_bins*scale), 8, 3)
 
 		return hist
+		
 			
 	

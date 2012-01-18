@@ -90,6 +90,7 @@ class MatchingUnit:
 		cv.CvtColor(image,img_cont,cv.CV_GRAY2BGR)
 		contour = cv.FindContours(img_tmp,cv.CreateMemStorage(),mode=cv.CV_RETR_EXTERNAL,method=cv.CV_CHAIN_APPROX_NONE)
 		cv.DrawContours(img_cont,contour,(255,0,0),(0,255,0),0,thickness=2)
+		cv.FillConvexPoly(img_cont, contour, (255,255,255), lineType=8, shift=0)
 		rect = cv.BoundingRect(contour)
 		cv.Rectangle(img_cont,(int(rect[0]),int(rect[1])),(int(rect[0]+rect[2]),int(rect[1]+rect[3])),(0,255,0))	
 			

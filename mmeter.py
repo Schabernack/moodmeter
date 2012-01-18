@@ -50,7 +50,14 @@ class Mmeter:
       cv.Rectangle(frame, pt1,pt2 , color,thickness=2)
     
       cv.Flip(frame,None,1)
-    
+      
+      font = cv.InitFont(cv.CV_FONT_HERSHEY_SIMPLEX,0.7,0.7,thickness=2)
+      
+
+      cv.PutText(frame, "Completely cover the rectangle with your hand ...", (50,400) , font, (255,255,255))
+      cv.PutText(frame, "Then press 'Space' to start!", (200,450) , font, (255,255,255))
+
+
       # display webcam image
       cv.ShowImage('Camera', frame)
       # handle events
@@ -71,7 +78,7 @@ class Mmeter:
     return returnimage
     
   def showResult(self,image,angle):
-    if angle < 10:
+    if angle < 20:
       mood = "Amazing!!!"
     elif angle < 67:
       mood = "Good!"
