@@ -1,1 +1,3 @@
-,,,O_o,,,
+Compute the mood of the user by analyzing thumbs up/thumbs down gestures.
+
+Uses OpenCV for Python.
